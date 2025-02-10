@@ -1,0 +1,113 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Квартира в центре",
+      "description": "Просторная квартира в центре города",
+      "location": "Москва",
+      "photo": "src/assets/avito_img.png",
+      "type": "Недвижимость",
+      "propertyType": "Квартира",
+      "area": 100,
+      "rooms": 3,
+      "price": 15000000
+    },
+    {
+      "id": 2,
+      "name": "Дом у озера",
+      "description": "Уютный дом с видом на озеро",
+      "location": "Санкт-Петербург",
+      "photo": "src/assets/avito_img.png",
+      "type": "Недвижимость",
+      "propertyType": "Дом",
+      "area": 200,
+      "rooms": 5,
+      "price": 25000000
+    },
+    {
+      "id": 3,
+      "name": "Офисное помещение",
+      "description": "Современный офис в бизнес-центре",
+      "location": "Екатеринбург",
+      "photo": "src/assets/avito_img.png",
+      "type": "Недвижимость",
+      "propertyType": "Офис",
+      "area": 75,
+      "rooms": 2,
+      "price": 10000000
+    },
+    {
+      "id": 4,
+      "name": "Toyota Camry",
+      "description": "Надежный автомобиль",
+      "location": "Москва",
+      "photo": "src/assets/avito_img.png",
+      "type": "Авто",
+      "brand": "Toyota",
+      "model": "Camry",
+      "year": 2020,
+      "mileage": 15000
+    },
+    {
+      "id": 5,
+      "name": "BMW X5",
+      "description": "Полный привод, отличное состояние",
+      "location": "Краснодар",
+      "photo": "src/assets/avito_img.png",
+      "type": "Авто",
+      "brand": "BMW",
+      "model": "X5",
+      "year": 2018,
+      "mileage": 60000
+    },
+    {
+      "id": 6,
+      "name": "Lada Granta",
+      "description": "Бюджетный и экономичный вариант",
+      "location": "Казань",
+      "photo": "src/assets/avito_img.png",
+      "type": "Авто",
+      "brand": "Lada",
+      "model": "Granta",
+      "year": 2021,
+      "mileage": 5000
+    },
+    {
+      "id": 7,
+      "name": "Ремонт квартир",
+      "description": "Качественный ремонт квартир",
+      "location": "Москва",
+      "photo": "src/assets/avito_img.png",
+      "type": "Услуги",
+      "serviceType": "Ремонт",
+      "experience": 5,
+      "cost": 50000,
+      "workSchedule": "Пн-Пт, 9:00-18:00"
+    },
+    {
+      "id": 8,
+      "name": "Репетитор по математике",
+      "description": "Помощь с экзаменами и контрольными",
+      "location": "Новосибирск",
+      "photo": "src/assets/avito_img.png",
+      "type": "Услуги",
+      "serviceType": "Обучение",
+      "experience": 10,
+      "cost": 1500,
+      "workSchedule": "Гибкий график"
+    },
+    {
+      "id": 9,
+      "name": "Юридические консультации",
+      "description": "Опыт работы в сфере права более 15 лет",
+      "location": "Сочи",
+      "photo": "src/assets/avito_img.png",
+      "type": "Услуги",
+      "serviceType": "Юридическая помощь",
+      "experience": 15,
+      "cost": 5000,
+      "workSchedule": "Пн-Сб, 10:00-20:00"
+    }
+  ]
+
+}

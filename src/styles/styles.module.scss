@@ -1,0 +1,13 @@
+.item {
+  display: flex;
+  flex-direction: row;
+  width: 600px;
+  height: 228px;
+  border: 1px solid black;
+  border-radius: 10px;
+  margin: 10px;
+
+  img {
+    border-radius: 10px 0 0 10px;
+  }
+}

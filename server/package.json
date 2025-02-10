@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Simple API for managing items",
   "main": "app.js",
+  "type": "module",
   "scripts": {
     "start": "node app.js"
   },
