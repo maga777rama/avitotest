@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getData } from "../api/api.ts";
 import { Item } from "../types/types.ts";
 import { Link } from "react-router-dom";
+import { CompleteServer } from "../../server/CompletionServer.ts";
 
 export const List = () => {
     const currentPage = usePaginationStore((state) => state.page);
@@ -43,6 +44,12 @@ export const List = () => {
                 ))}
             </div>
             <Pagination count={data.length} />
+
+            <div>
+                <button onClick={CompleteServer}>
+                    ДОБАВИТЬ ТЕСТОВЫЕ ДАННЫЕ
+                </button>
+            </div>
         </main>
     );
 };

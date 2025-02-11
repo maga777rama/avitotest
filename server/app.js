@@ -1,4 +1,3 @@
-import data from "./data.json" with { type: "json" };
 import cors from "cors";
 import express from "express";
 import bodyParser from "body-parser";
@@ -14,7 +13,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // In-memory хранилище для объявлений
-let items = data.data;
+let items = [];
 
 const makeCounter = () => {
     let count = 0;
