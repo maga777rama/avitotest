@@ -1,41 +1,54 @@
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect, useRef, useState } from "react";
+import { FieldErrors, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import styles from "../../styles/styles.module.scss";
-import { AdType } from "./types";
+import formStyles from "./formStyles.module.scss";
+import {
+    AdType,
+    CarData,
+    FullFormData,
+    RealEstateData,
+    ServiceData,
+} from "./types";
 import {
     schemaMain,
     schemaRealEstate,
     schemaAuto,
     schemaService,
 } from "./YupSchemes.ts";
-import { postDataToCrateAd } from "../../api/api.ts";
-import { Link, useNavigate } from "react-router-dom";
-
-export type FormData = {
-    name: string;
-    description: string;
-    location: string;
-    type: AdType;
-    propertyType?: string;
-    area?: number;
-    rooms?: number;
-    price?: number;
-    brand?: string;
-    model?: string;
-    year?: number;
-    mileage?: number;
-    serviceType?: string;
-    experience?: number;
-    cost?: number;
-    workSchedule?: string;
-};
+import { useLocation, useNavigate } from "react-router-dom";
+import {
+    deleteDraft,
+    getDraft,
+    postDataToCrateAd,
+    updateDataById,
+    uploadPhoto,
+} from "../../api/api.ts";
+import { useDebouncedCallback } from "use-debounce";
+import { GetFormData } from "./getFormData.ts";
+import { CloseOutlined } from "@ant-design/icons";
+import { Image } from "antd";
 
 export const Form = () => {
+    console.log("RENDER!!!!!");
     const [step, setStep] = useState(1);
-    const [schema, setSchema] = useState<yup.AnyObjectSchema>(schemaMain);
+    const schema = useRef<yup.AnyObjectSchema>(schemaMain);
     const navigate = useNavigate();
+    const location = useLocation();
+    const message = location.state?.id;
+    const [photoState, setPhotoState] = useState<string>("");
+
+    useEffect(() => {
+        (async () => {
+            const data = await getDraft();
+            const { id, ...dataWithoutId } = data;
+            reset(dataWithoutId);
+
+            if (dataWithoutId.photo) {
+                setPhotoState(dataWithoutId.photo);
+            }
+        })();
+    }, []);
 
     const {
         register,
@@ -44,53 +57,158 @@ export const Form = () => {
         formState: { errors },
         trigger,
         reset,
-    } = useForm<FormData>({
-        resolver: yupResolver(schema),
-        mode: "onBlur",
+        // setValue,
+    } = useForm<FullFormData>({
+        resolver: yupResolver(schema.current),
+        mode: "onSubmit",
     });
+
+    const realEstateErrors = errors as FieldErrors<RealEstateData>;
+    const carErrors = errors as FieldErrors<CarData>;
+    const serviceErrors = errors as FieldErrors<ServiceData>;
 
     const selectedType = watch("type");
 
+    // меняем схемы валидации
     useEffect(() => {
         switch (selectedType) {
             case AdType.RealEstate:
-                setSchema(schemaRealEstate);
+                schema.current = schemaRealEstate;
                 break;
             case AdType.Car:
-                setSchema(schemaAuto);
+                schema.current = schemaAuto;
                 break;
             case AdType.Service:
-                setSchema(schemaService);
+                schema.current = schemaService;
                 break;
             default:
-                setSchema(schemaMain);
+                schema.current = schemaMain;
         }
     }, [selectedType]);
 
-    const onSubmit = (data: FormData) => {
-        console.log(data);
-        postDataToCrateAd(data);
+    const currentFormData = watch();
+
+    const a = useDebouncedCallback(() => {
+        (async () => {
+            const item = await postDataToCrateAd(
+                GetFormData(photoState, currentFormData),
+                true,
+            );
+            setPhotoState(item.photo);
+            console.log(item);
+            console.log(watch("photo"));
+        })();
+    }, 1200);
+
+    useEffect(() => {
+        a();
+    }, [currentFormData]);
+
+    const photo = watch("photo");
+
+    useEffect(() => {
+        if (
+            photo !== undefined &&
+            photo?.length > 0 &&
+            typeof photo !== "string"
+        ) {
+            console.log(11111111111);
+            const formData = new FormData();
+            formData.append("photo", photo[0]);
+            (async () => {
+                const data = await uploadPhoto(formData);
+                setPhotoState(data.photoUrl);
+
+                // setValue("photo", data.photoUrl);
+            })();
+        }
+    }, [photo]);
+
+    const onSubmit = () => {
+        console.log(
+            message === undefined
+                ? postDataToCrateAd(
+                      GetFormData(photoState, currentFormData),
+                      false,
+                  )
+                : updateDataById(
+                      message,
+                      GetFormData(photoState, currentFormData),
+                  ),
+        );
+        console.log(deleteDraft());
         reset();
         navigate("/list");
     };
 
+    console.log(photoState);
     return (
-        <main>
-            <Link to={"/list"}>Отмена</Link>
+        <main className={formStyles.Form}>
+            {message === undefined ? (
+                <h1>Новое объявление</h1>
+            ) : (
+                <h1>Редактирование объявления</h1>
+            )}
+
+            <button
+                onClick={() => {
+                    reset();
+                    console.log("button cancels");
+                    console.log(deleteDraft());
+                    navigate("/list");
+                }}
+            >
+                Отмена
+            </button>
 
             {step === 1 && (
-                <form className={styles.Form}>
+                <form>
                     <label>Название</label>
                     <input {...register("name")} type="text" />
                     <p>{errors.name?.message}</p>
-
                     <label>Описание</label>
-                    <input {...register("description")} type="text" />
+                    <textarea {...register("description")} />
                     <p>{errors.description?.message}</p>
-
                     <label>Локация</label>
                     <input {...register("location")} type="text" />
                     <p>{errors.location?.message}</p>
+                    <label>Фото</label>
+                    <div className={formStyles.preview}>
+                        <input
+                            id={"imageInput"}
+                            {...register("photo")}
+                            type="file"
+                            accept="image/*"
+                        />
+                        <label htmlFor="imageInput">
+                            {photoState === "" ? (
+                                "+"
+                            ) : (
+                                <>
+                                    <Image
+                                        className={formStyles.image}
+                                        width={100}
+                                        height={100}
+                                        src={photoState}
+                                        onClick={(e) => e.preventDefault()}
+                                        preview={{
+                                            src: photoState,
+                                        }}
+                                    />
+                                    <CloseOutlined
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            setPhotoState("");
+                                        }}
+                                        className={
+                                            formStyles.preview__deleteIcon
+                                        }
+                                    />
+                                </>
+                            )}
+                        </label>
+                    </div>
+                    <p>{errors.photo?.message}</p>
 
                     <label>Тип объявления</label>
                     <select {...register("type")}>
@@ -102,7 +220,6 @@ export const Form = () => {
                         <option value={AdType.Service}>{AdType.Service}</option>
                     </select>
                     <p>{errors.type?.message}</p>
-
                     <button
                         type="button"
                         onClick={async () => {
@@ -112,7 +229,6 @@ export const Form = () => {
                                 "location",
                                 "type",
                             ]);
-                            console.log("Validation result:", isValid);
                             if (isValid) setStep(2);
                         }}
                     >
@@ -122,7 +238,10 @@ export const Form = () => {
             )}
 
             {step === 2 && (
-                <form onSubmit={handleSubmit(onSubmit)} className={styles.Form}>
+                <form
+                    onSubmit={handleSubmit(onSubmit)}
+                    className={formStyles.Form}
+                >
                     {selectedType === AdType.RealEstate && (
                         <>
                             <label>Тип недвижимости</label>
@@ -132,19 +251,19 @@ export const Form = () => {
                                 <option value="Дом">Дом</option>
                                 <option value="Коттедж">Коттедж</option>
                             </select>
-                            <p>{errors.propertyType?.message}</p>
+                            <p>{realEstateErrors.propertyType?.message}</p>
 
                             <label>Площадь</label>
                             <input {...register("area")} type="number" />
-                            <p>{errors.area?.message}</p>
+                            <p>{realEstateErrors.area?.message}</p>
 
                             <label>Количество комнат</label>
                             <input {...register("rooms")} type="number" />
-                            <p>{errors.rooms?.message}</p>
+                            <p>{realEstateErrors.rooms?.message}</p>
 
                             <label>Цена</label>
                             <input {...register("price")} type="number" />
-                            <p>{errors.price?.message}</p>
+                            <p>{realEstateErrors.price?.message}</p>
                         </>
                     )}
                     {selectedType === AdType.Car && (
@@ -156,19 +275,19 @@ export const Form = () => {
                                 <option value="Toyota">Toyota</option>
                                 <option value="Лада">Лада</option>
                             </select>
-                            <p>{errors.brand?.message}</p>
+                            <p>{carErrors.brand?.message}</p>
 
                             <label>Модель</label>
                             <input {...register("model")} />
-                            <p>{errors.model?.message}</p>
+                            <p>{carErrors.model?.message}</p>
 
                             <label>Год выпуска</label>
                             <input {...register("year")} type="number" />
-                            <p>{errors.year?.message}</p>
+                            <p>{carErrors.year?.message}</p>
 
                             <label>Пробег</label>
                             <input {...register("mileage")} type="number" />
-                            <p>{errors.mileage?.message}</p>
+                            <p>{carErrors.mileage?.message}</p>
                         </>
                     )}
                     {selectedType === AdType.Service && (
@@ -180,15 +299,15 @@ export const Form = () => {
                                 <option value="Уборка">Уборка</option>
                                 <option value="Доставка">Доставка</option>
                             </select>
-                            <p>{errors.serviceType?.message}</p>
+                            <p>{serviceErrors.serviceType?.message}</p>
 
                             <label>Опыт работы</label>
                             <input {...register("experience")} type="number" />
-                            <p>{errors.experience?.message}</p>
+                            <p>{serviceErrors.experience?.message}</p>
 
                             <label>Стоимость</label>
                             <input {...register("cost")} type="number" />
-                            <p>{errors.cost?.message}</p>
+                            <p>{serviceErrors.cost?.message}</p>
                         </>
                     )}
 

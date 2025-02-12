@@ -1,4 +1,29 @@
+/** {*/
+/*    font-family: -apple-system, 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';*/
+/*    !*color: rgb(39, 43, 51);*!*/
+/*}*/
+
+/*a, a:visited, a:hover, a:focus, a:active {*/
+/*    text-decoration: none;*/
+/*    color: inherit; !* Можно указать свой цвет: #000, #fff и т.п. *!*/
+/*}*/
+
+
+/*.myLinkClass {*/
+/*    text-decoration: none;*/
+/*    color: inherit;*/
+/*}*/
+
+/*.myLinkClass:visited {*/
+/*    color: inherit; !* или любой другой цвет *!*/
+/*}*/
+
+/*.myLinkClass:hover,*/
+/*.myLinkClass:active {*/
+/*    text-decoration: none; !* или underline, если нужно *!*/
+/*}*/
+
+
 * {
-    font-family: -apple-system, 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-    /*color: rgb(39, 43, 51);*/
+    font-family: Arial,'Helvetica Neue',Helvetica,sans-serif;
 }

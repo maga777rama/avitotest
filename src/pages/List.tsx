@@ -6,9 +6,22 @@ import { getData } from "../api/api.ts";
 import { Item } from "../types/types.ts";
 import { Link } from "react-router-dom";
 import { CompleteServer } from "../../server/CompletionServer.ts";
+import { useSearchStore } from "../stores/searchStore.ts";
+import { useDebounce } from "use-debounce";
+import { useEffect } from "react";
+import { FormData2 } from "./form/types.ts";
+import styles from "../styles/styles.module.scss";
+import { Filtering } from "../shared/components/filtering.tsx";
 
 export const List = () => {
     const currentPage = usePaginationStore((state) => state.page);
+    const { searchText } = useSearchStore();
+    const [debouncedSearchText] = useDebounce(searchText, 800);
+    const setPage = usePaginationStore((state) => state.setPage);
+
+    useEffect(() => {
+        setPage(1);
+    }, [debouncedSearchText, setPage]);
 
     const { data, error, isLoading } = useQuery({
         queryKey: ["ite"],
@@ -21,29 +34,51 @@ export const List = () => {
     }
 
     if (error) {
-        return <div>Пиздец</div>;
+        return <div>Возникла ошибка при загрузке данных</div>;
+    }
+
+    // TODO
+    // исправить логику пагинации и поиска
+    // работает,но по ублюдски
+    let data1 = null;
+
+    if (debouncedSearchText !== "") {
+        data1 = data.filter((item: FormData2) =>
+            item.name.toLowerCase().includes(debouncedSearchText.toLowerCase()),
+        );
+    } else {
+        data1 = data;
     }
 
     const lastIndex = 5 * currentPage;
     const firstIndex = lastIndex - 5;
-    const slicesData = data.slice(firstIndex, lastIndex);
-    console.log(slicesData);
+    const slicesData = data1.slice(firstIndex, lastIndex);
 
     return (
-        <main>
-            <Link to={"/form"}>Разместить объявление</Link>
-            <div>
-                {slicesData.map((item: Item) => (
-                    <ItemBlock
-                        key={item.id}
-                        name={item.name}
-                        photo={item.photo}
-                        description={item.description}
-                        location={item.location}
-                    />
-                ))}
+        <main className={styles.List}>
+            <Link
+                to={"/form"}
+                className={`${styles.LinkReact} ${styles.List__placeAdButton}`}
+            >
+                Разместить объявление
+            </Link>
+            <div className={styles.List__content}>
+                <div className={styles.List__items}>
+                    {slicesData.map((item: Item) => (
+                        <ItemBlock
+                            key={item.id}
+                            id={item.id}
+                            name={item.name}
+                            photo={item.photo}
+                            location={item.location}
+                            type={item.type}
+                        />
+                    ))}
+                </div>
+                <Filtering />
             </div>
-            <Pagination count={data.length} />
+
+            {data.length > 5 && <Pagination count={data.length} />}
 
             <div>
                 <button onClick={CompleteServer}>
