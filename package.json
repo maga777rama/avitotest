@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
 
-    "start": "node server/app.js",
+    "start": "node server/index.js",
     "run dev": "npm run dev"
   },
   "dependencies": {
