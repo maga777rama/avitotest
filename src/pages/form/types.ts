@@ -4,50 +4,6 @@ export enum AdType {
     Service = "Услуги",
 }
 
-export interface Default {
-    name?: string;
-    description?: string;
-    location?: string;
-    photo?: string;
-    type?: AdType;
-    propertyType?: string;
-    area?: number;
-    rooms?: number;
-    price?: number;
-    brand?: string;
-    model?: string;
-    year?: number;
-    mileage?: number;
-    serviceType?: string;
-    experience?: number;
-    cost?: number;
-    workSchedule?: string;
-}
-
-export interface FormData1 {
-    name: string;
-    description: string;
-    location: string;
-    photo: string | File;
-    type: AdType;
-    propertyType?: string;
-    area?: number;
-    rooms?: number;
-    price?: number;
-    brand?: string;
-    model?: string;
-    year?: number;
-    mileage?: number;
-    serviceType?: string;
-    experience?: number;
-    cost?: number;
-    workSchedule?: string;
-}
-
-export interface FormData2 extends FormData1 {
-    id: number;
-}
-
 export interface BaseFormData {
     name: string;
     description: string;
@@ -82,3 +38,5 @@ export interface ServiceData {
 
 export type FullFormData = BaseFormData &
     (RealEstateData | CarData | ServiceData);
+
+export type FullFormDataWithId = FullFormData & { id: number };

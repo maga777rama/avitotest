@@ -1,11 +1,11 @@
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import { List } from "./pages/List.tsx";
-import "./styles/global.css";
+import { List } from "./pages/list/List.tsx";
+import "./styles/global.scss";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./api/queryClient.ts";
 import { Form } from "./pages/form/Form.tsx";
-import { ItemDetailed } from "./pages/ItemDetailed.tsx";
+import { ItemDetailed } from "./pages/item/ItemDetailed.tsx";
 
 createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
