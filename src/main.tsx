@@ -1,10 +1,21 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+import { createRoot } from "react-dom/client";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { List } from "./pages/list/List.tsx";
+import "./styles/global.scss";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./api/queryClient.ts";
+import { Form } from "./pages/form/Form.tsx";
+import { ItemDetailed } from "./pages/item/ItemDetailed.tsx";
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+createRoot(document.getElementById("root")!).render(
+    <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<Navigate to={"/list"} replace />} />
+                <Route path="/list/" element={<List />} />
+                <Route path="/form/" element={<Form />} />
+                <Route path="/item/:id" element={<ItemDetailed />} />
+            </Routes>
+        </BrowserRouter>
+    </QueryClientProvider>,
+);
